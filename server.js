@@ -30,9 +30,11 @@ app.post("/app/new", (req, res) => {
 	res.status(201).json({"message": info.changes + " record created: ID " + info.lastInsertRowid + " (201)"});
 });
 // READ a list of all users (HTTP method GET) at endpoint /app/users/
-app.get("/app/users", (req, res) => {	
+app.get("/app/users", (req, res) => {
+
 	const stmt = db.prepare("SELECT * FROM userinfo").all();
 	res.status(200).json(stmt);
+	 
 });
 
 // READ a single user (HTTP method GET) at endpoint /app/user/:id
