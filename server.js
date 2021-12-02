@@ -2,9 +2,9 @@
 var express = require("express")
 var app = express()
 // Require database SCRIPT file
-var db = require('./database.js')
+var db = require("./database.js")
 // Require md5 MODULE
-var md5 = require('md5')
+var md5 = require("md5")
 var bodyParser = require("body-parser");
 // Make Express use its own built-in body parser
 app.use(express.urlencoded({ extended: true }));
@@ -37,9 +37,11 @@ app.get("/app/users", (req, res) => {
 
 // READ a single user (HTTP method GET) at endpoint /app/user/:id
 app.get("/app/user/:id", (req, res) => {	
-	const id = req.params.id;
+
 	const stmt = db.prepare("SELECT * FROM userinfo WHERE id = ${id}").all();
-	res.status(200).json(stmt[0]);
+	const info = stmt.get(req.params.id);
+	res.status(200).json(info);
+
 });
 // UPDATE a single user (HTTP method PATCH) at endpoint /app/update/user/:id
 app.patch("/app/update/user/:id", (req, res) => {
@@ -47,7 +49,7 @@ app.patch("/app/update/user/:id", (req, res) => {
 	const user = req.body.user;
 	const pass = md5(req.body.pass);
 	const stmt = db.prepare("UPDATE userinfo SET user = COALESCE(?,user), pass = COALESCE(?, pass) WHERE id = ?{id}").run(user, pass);
-	res.status(201).json({message: "1 record updated: ID ${req.params.id} (200)"})
+	res.status(201).json({message: '1 record updated: ID ${req.params.id} (200)',})
 });
 // DELETE a single user (HTTP method DELETE) at endpoint /app/delete/user/:id
 app.delete("/app/delete/user/:id", (req, res) => {
