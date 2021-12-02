@@ -37,13 +37,23 @@ app.get("/app/users", (req, res) => {
 // READ a single user (HTTP method GET) at endpoint /app/user/:id
 app.get("/app/user/:id", (req, res) => {	
 	const id = req.params.id;
-	const stmt = database.prepare("SELECT * FROM userinfo WHERE id = ${id}").all();
-	res.status(200).send(stmt[0]);
+	const stmt = db.prepare("SELECT * FROM userinfo WHERE id = ${id}").all();
+	res.status(200).json(stmt[0]);
 });
 // UPDATE a single user (HTTP method PATCH) at endpoint /app/update/user/:id
-app.patch()
+app.patch("/app/update/user/:id", (req, res) => {
+	const id = req.params.id;
+	const user = req.body.user;
+	const pass = md5(req.body.pass);
+	const stmt = db.prepare("UPDATE userinfo SET user = COALESCE(?,user), pass = COALESCE(?, pass) WHERE id = ?{id}").run(user, pass);
+	res.status(201).json({message: "1 record updated: ID ${req.params.id} (200)"})
+});
 // DELETE a single user (HTTP method DELETE) at endpoint /app/delete/user/:id
-
+app.delete("/app/delete/user/:id", (req, res) => {
+	const stmt = db.prepare("DELETE FROM userinfo WHERE id=?");
+	const info = stmt.run(req.params.id);
+	res.status(200).json({message: "1 record deleted: ID ${req.params.id} (200)"})
+});
 // Default response for any other request
 app.use(function(req, res){
 	res.json({"message":"Endpoint not found. (404)"});
