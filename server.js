@@ -5,12 +5,13 @@ var app = express()
 var db = require('./database.js')
 // Require md5 MODULE
 var md5 = require('md5')
+var bodyParser = require("body-parser");
 // Make Express use its own built-in body parser
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Set server port
-const HTTP_PORT = 5000;
+var HTTP_PORT = 5000;
 // Start server
 app.listen(HTTP_PORT, () => {
     console.log("Server running on port %PORT%".replace("%PORT%",HTTP_PORT))
@@ -52,7 +53,7 @@ app.patch("/app/update/user/:id", (req, res) => {
 app.delete("/app/delete/user/:id", (req, res) => {
 	const stmt = db.prepare("DELETE FROM userinfo WHERE id=?");
 	const info = stmt.run(req.params.id);
-	res.status(200).json({message: "1 record deleted: ID ${req.params.id} (200)"})
+	res.status(200).json({message: '1 record deleted: ID ${req.params.id} (200)',})
 });
 // Default response for any other request
 app.use(function(req, res){
